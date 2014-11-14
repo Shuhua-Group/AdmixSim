@@ -1,4 +1,4 @@
-Admix Models
+Admixture Models Simulator
 ========
 1. Hybrid Isolation Model
 1)Admixture started T generation ago, ancestral contribution from parental population 1 is m, and from parental population 2 is (1-m);
@@ -14,4 +14,9 @@ for ancestral population 1:
   f(x;T,m)=m*T*exp(-m*T*x)
 
 2. Gradual Admixture Model
+
+//TODO
+
 3. Continuous Gene Flow Model
+
+//TODO
