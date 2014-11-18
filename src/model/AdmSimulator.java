@@ -73,6 +73,7 @@ public class AdmSimulator {
 			for (Chromosome chr : admp.sample(nsample)) {
 				mpbw.write(ca.copy(anchaps, map, chr));
 				mpbw.newLine();
+				chr.smooth();
 				for (Segment seg : chr.getSegments()) {
 					segbw.write(String.format("%.8f\t%.8f\t%d",
 							seg.getStart(), seg.getEnd(),
