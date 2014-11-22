@@ -7,6 +7,7 @@ import java.util.Random;
 import java.util.Vector;
 
 import adt.Chromosome;
+import adt.ChromPair;
 import adt.Population;
 import adt.Segment;
 
@@ -157,9 +158,27 @@ public class GeneralModel {
 					}
 				}
 			}
-			Population tmpPop = new Population(0, haplosCur);
-			pop = tmpPop.evolve(curNe);
-		}
+			//Population tmpPop = new Population(0, haplosCur);
+			//pop = tmpPop.evolve(curNe);
+			Vector<Chromosome> tmp = new Vector<Chromosome>();
+			Vector<Integer> index = new Vector<Integer>();
+			for(int j = 0; j < haplosCur.size(); j++){
+				index.add(j);
+			}
+			int t=index.size();
+			while(t>0){
+				int ind1 = random.nextInt(t);
+				index.remove(ind1);
+				t=index.size();
+				int ind2 = random.nextInt(t);
+				index.remove(ind2);
+				t=index.size();
+				ChromPair cp = new ChromPair(haplosCur.elementAt(ind1), haplosCur.elementAt(ind2));
+				cp = cp.recombine();
+				tmp.add(cp.getChromosome(1));
+				tmp.add(cp.getChromosome(2));
+			}
+		}		
 
 	}
 

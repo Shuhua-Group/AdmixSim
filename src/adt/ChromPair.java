@@ -12,7 +12,7 @@ public class ChromPair {
 		this.chrom2 = chrom2;
 	}
 
-	Chromosome getChromosome(int index) {
+	public Chromosome getChromosome(int index) {
 		if (index == 1) {
 			return chrom1;
 		} else {
