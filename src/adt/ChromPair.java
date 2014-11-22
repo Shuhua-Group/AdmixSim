@@ -30,11 +30,11 @@ public class ChromPair {
 		return -Math.log(1 - probability) / lambda;
 	}
 
-	Vector<Double> breakPoints(double length) {
+	Vector<Double> breakPoints(double length, double startPos=0) {
 		Vector<Double> breakpoints = new Vector<Double>();
 		breakpoints.add(0.0);
-		while (breakpoints.lastElement() < length) {
-			breakpoints.add(breakpoints.lastElement() + waitTime(1));
+		while (breakpoints.lastElement() < length - startPos) {
+			breakpoints.add(breakpoints.lastElement() + waitTime(1) + startPos);
 		}
 		breakpoints.setElementAt(length, breakpoints.size() - 1);
 		return breakpoints;
