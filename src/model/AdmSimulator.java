@@ -27,7 +27,7 @@ public class AdmSimulator {
 		String prefix = "";
 		String outprefix = "";
 		// System.out.println(args.length);
-		if (args.length < 1	|| (args.length < 10 && (!args[0].equals("-h") || !args[0].equals("--help")))) {
+		if (args.length < 1	|| (args.length < 14 && (!args[0].equals("-h") || !args[0].equals("--help")))) {
 			System.err.println("Need more arguments than provided");
 			help();
 			System.exit(1);
