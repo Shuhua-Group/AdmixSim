@@ -44,6 +44,7 @@ public class Chromosome {
 	}
 
 	public int indexOf(double pos) {
+		//find the index of segment, by binary search
 		if (breaks.size() == 0)
 			return 0;
 		else {

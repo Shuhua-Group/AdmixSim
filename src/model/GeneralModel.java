@@ -72,10 +72,10 @@ public class GeneralModel {
 						props[i][j] = Double.parseDouble(tmp[j + 1]);
 					}
 					i++;
-				} //else {
-				//	System.err.println("The number of columns does not match");
-				//	System.err.println("Line skipped");
-				//}
+				} // else {
+					// System.err.println("The number of columns does not match");
+					// System.err.println("Line skipped");
+					// }
 			}
 			if (br != null) {
 				br.close();
@@ -129,13 +129,13 @@ public class GeneralModel {
 			int curNe = Nes[i];
 			int numbAnc = props[i].length;
 			int[] nhapCur = new int[numbAnc];
-			int sumnHapCur = 0;
+			int sumHapCur = 0;
 			for (int j = 0; j < numbAnc; j++) {
-				nhapCur[j] = (int) (curNe * props[i][j]);
-				sumnHapCur += nhapCur[j];
+				nhapCur[j] = (int) (curNe * 2 * props[i][j]);
+				sumHapCur += nhapCur[j];
 			}
 			// prepare haplotypes in current generation
-			nhapPrev = curNe - sumnHapCur;
+			nhapPrev = curNe * 2 - sumHapCur;
 			Vector<Chromosome> haplosCur = new Vector<Chromosome>();
 			if (nhapPrev > 0 && pop != null) {
 				haplosCur = pop.sample(nhapPrev);

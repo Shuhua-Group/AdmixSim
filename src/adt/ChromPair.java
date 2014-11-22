@@ -20,24 +20,68 @@ public class ChromPair {
 		}
 	}
 
-	double waitTime(double lambda) {
+	// double waitTime(double lambda) {
+	// /*
+	// * Poisson Process waiting time T follow distribution below: P(T<t) = 1
+	// * - exp(-lambda*t)
+	// */
+	// Random random = new Random();
+	// double probability = random.nextDouble();
+	// return -Math.log(1 - probability) / lambda;
+	// }
+
+	int getPoissonNumber(double lambda) {
 		/*
-		 * Poisson Process waiting time T follow distribution below: P(T<t) = 1
-		 * - exp(-lambda*t)
+		 * A simple algorithm to generate random Poisson-distributed numbers by
+		 * Donald Knuth http://en.wikipedia.org/wiki/Donald_Knuth
 		 */
+		double length = Math.exp(-lambda);
+		double prob = 1.0;
+		int number = 0;
 		Random random = new Random();
-		double probability = random.nextDouble();
-		return -Math.log(1 - probability) / lambda;
+		do {
+			number++;
+			prob *= random.nextDouble();
+		} while (prob > length);
+		return number - 1;
 	}
 
-	Vector<Double> breakPoints(double length, double startPos=0) {
-		Vector<Double> breakpoints = new Vector<Double>();
-		breakpoints.add(0.0);
-		while (breakpoints.lastElement() < length - startPos) {
-			breakpoints.add(breakpoints.lastElement() + waitTime(1) + startPos);
+	public double[] breakPoints(double length) {
+		// break points shift the overflow of previous recombination events
+		// for the first, the shift is 0
+		int breakNumber = getPoissonNumber(length);
+		double[] breakpoints = new double[breakNumber + 2];
+		breakpoints[0] = 0.0;
+		Random random = new Random();
+		for (int i = 1; i <= breakNumber; i++) {
+			breakpoints[i] = random.nextDouble() * length;
 		}
-		breakpoints.setElementAt(length, breakpoints.size() - 1);
+		breakpoints[breakNumber + 1] = length;
+		// while (breakpoints.lastElement() < length) {
+		// breakpoints.add(breakpoints.lastElement() + waitTime(1));
+		// }
+		// breakpoints.setElementAt(length, breakpoints.size() - 1);
+		breakpoints = selectSort(breakpoints);
 		return breakpoints;
+	}
+
+	public double[] selectSort(double[] data) {
+		// Selection sort
+		int iMin;
+		for (int i = 0; i < data.length - 1; i++) {
+			iMin = i;
+			for (int j = i + 1; j < data.length; j++) {
+				if (data[j] < data[iMin]) {
+					iMin = j;
+				}
+			}
+			if (iMin != i) {
+				double tmp = data[i];
+				data[i] = data[iMin];
+				data[iMin] = tmp;
+			}
+		}
+		return data;
 	}
 
 	public ChromPair recombine() {
@@ -45,14 +89,17 @@ public class ChromPair {
 			System.err.println("Chromosome length differ, please check again");
 			return this;
 		}
-		Vector<Double> bps = breakPoints(chrom1.getLength());
-		double start = bps.firstElement();
+		double[] bps = breakPoints(chrom1.getLength());
+		// double start = bps.firstElement();
+		double start = bps[0];
 		double end;
 		Vector<Segment> segs1, segs2;
 		segs1 = new Vector<Segment>();
 		segs2 = new Vector<Segment>();
-		for (int i = 1; i < bps.size(); i++) {
-			end = bps.elementAt(i);
+		// for (int i = 1; i < bps.size(); i++) {
+		for (int i = 1; i < bps.length; i++) {
+			// end = bps.elementAt(i);
+			end = bps[i];
 			if (i % 2 == 1) {
 				for (Segment sg : chrom1.extractSegment(start, end))
 					segs1.add(sg);
@@ -69,71 +116,71 @@ public class ChromPair {
 		return new ChromPair(new Chromosome(segs1), new Chromosome(segs2));
 	}
 
-//	public static void main(String[] args) {
-//		Segment s1, s2;
-//		s1 = new Segment(0, 2, 1);
-//		s2 = new Segment(0, 2, 2);
-//		Chromosome chr1, chr2;
-//		chr1 = new Chromosome(new Vector<Segment>());
-//		chr1.addSegment(s1);
-//		chr2 = new Chromosome(new Vector<Segment>());
-//		chr2.addSegment(s2);
-//		ChromPair cp = new ChromPair(chr1, chr2);
-//		System.out.println("Original ChromPair");
-//		System.out.print("Chrom1:");
-//		for (Segment s : cp.getChromosome(1).extractSegment(0, 2)) {
-//			System.out.print("(" + s.getStart() + "," + s.getEnd() + ","
-//					+ s.getLabel() + ")");
-//		}
-//		System.out.println();
-//		System.out.print("Chrom2:");
-//		for (Segment s : cp.getChromosome(2).extractSegment(0, 2)) {
-//			System.out.print("(" + s.getStart() + "," + s.getEnd() + ","
-//					+ s.getLabel() + ")");
-//		}
-//		System.out.println();
-//		System.out.println("After 1 recombination");
-//		cp = cp.recombine();
-//		System.out.print("Chrom1:");
-//		for (Segment s : cp.getChromosome(1).extractSegment(0, 2)) {
-//			System.out.print("(" + s.getStart() + "," + s.getEnd() + ","
-//					+ s.getLabel() + ")");
-//		}
-//		System.out.println();
-//		System.out.print("Chrom2:");
-//		for (Segment s : cp.getChromosome(2).extractSegment(0, 2)) {
-//			System.out.print("(" + s.getStart() + "," + s.getEnd() + ","
-//					+ s.getLabel() + ")");
-//		}
-//		System.out.println();
-//		System.out.println("After 2 recombination");
-//		cp = cp.recombine();
-//		System.out.print("Chrom1:");
-//		for (Segment s : cp.getChromosome(1).extractSegment(0, 2)) {
-//			System.out.print("(" + s.getStart() + "," + s.getEnd() + ","
-//					+ s.getLabel() + ")");
-//		}
-//		System.out.println();
-//		System.out.print("Chrom2:");
-//		for (Segment s : cp.getChromosome(2).extractSegment(0, 2)) {
-//			System.out.print("(" + s.getStart() + "," + s.getEnd() + ","
-//					+ s.getLabel() + ")");
-//		}
-//		System.out.println();
-//		System.out.println("After 3 recombination");
-//		cp = cp.recombine();
-//		System.out.print("Chrom1:");
-//		for (Segment s : cp.getChromosome(1).extractSegment(0, 2)) {
-//			System.out.print("(" + s.getStart() + "," + s.getEnd() + ","
-//					+ s.getLabel() + ")");
-//		}
-//		System.out.println();
-//		System.out.print("Chrom2:");
-//		for (Segment s : cp.getChromosome(2).extractSegment(0, 2)) {
-//			System.out.print("(" + s.getStart() + "," + s.getEnd() + ","
-//					+ s.getLabel() + ")");
-//		}
-//		System.out.println();
-//	}
+	// public static void main(String[] args) {
+	// Segment s1, s2;
+	// s1 = new Segment(0, 2, 1);
+	// s2 = new Segment(0, 2, 2);
+	// Chromosome chr1, chr2;
+	// chr1 = new Chromosome(new Vector<Segment>());
+	// chr1.addSegment(s1);
+	// chr2 = new Chromosome(new Vector<Segment>());
+	// chr2.addSegment(s2);
+	// ChromPair cp = new ChromPair(chr1, chr2);
+	// System.out.println("Original ChromPair");
+	// System.out.print("Chrom1:");
+	// for (Segment s : cp.getChromosome(1).extractSegment(0, 2)) {
+	// System.out.print("(" + s.getStart() + "," + s.getEnd() + ","
+	// + s.getLabel() + ")");
+	// }
+	// System.out.println();
+	// System.out.print("Chrom2:");
+	// for (Segment s : cp.getChromosome(2).extractSegment(0, 2)) {
+	// System.out.print("(" + s.getStart() + "," + s.getEnd() + ","
+	// + s.getLabel() + ")");
+	// }
+	// System.out.println();
+	// System.out.println("After 1 recombination");
+	// cp = cp.recombine();
+	// System.out.print("Chrom1:");
+	// for (Segment s : cp.getChromosome(1).extractSegment(0, 2)) {
+	// System.out.print("(" + s.getStart() + "," + s.getEnd() + ","
+	// + s.getLabel() + ")");
+	// }
+	// System.out.println();
+	// System.out.print("Chrom2:");
+	// for (Segment s : cp.getChromosome(2).extractSegment(0, 2)) {
+	// System.out.print("(" + s.getStart() + "," + s.getEnd() + ","
+	// + s.getLabel() + ")");
+	// }
+	// System.out.println();
+	// System.out.println("After 2 recombination");
+	// cp = cp.recombine();
+	// System.out.print("Chrom1:");
+	// for (Segment s : cp.getChromosome(1).extractSegment(0, 2)) {
+	// System.out.print("(" + s.getStart() + "," + s.getEnd() + ","
+	// + s.getLabel() + ")");
+	// }
+	// System.out.println();
+	// System.out.print("Chrom2:");
+	// for (Segment s : cp.getChromosome(2).extractSegment(0, 2)) {
+	// System.out.print("(" + s.getStart() + "," + s.getEnd() + ","
+	// + s.getLabel() + ")");
+	// }
+	// System.out.println();
+	// System.out.println("After 3 recombination");
+	// cp = cp.recombine();
+	// System.out.print("Chrom1:");
+	// for (Segment s : cp.getChromosome(1).extractSegment(0, 2)) {
+	// System.out.print("(" + s.getStart() + "," + s.getEnd() + ","
+	// + s.getLabel() + ")");
+	// }
+	// System.out.println();
+	// System.out.print("Chrom2:");
+	// for (Segment s : cp.getChromosome(2).extractSegment(0, 2)) {
+	// System.out.print("(" + s.getStart() + "," + s.getEnd() + ","
+	// + s.getLabel() + ")");
+	// }
+	// System.out.println();
+	// }
 
 }

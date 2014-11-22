@@ -98,23 +98,23 @@ public class Population {
 		return new Population(getLabel(), haplos);
 	}
 
-//	public static void main(String[] args) {
-//		Vector<Segment> segs = new Vector<Segment>();
-//		segs.add(new Segment(0, 2, 1));
-//		Chromosome chr = new Chromosome(segs);
-//		Vector<Chromosome> haplo = new Vector<Chromosome>();
-//		haplo.add(chr);
-//		Population p = new Population(1, haplo);
-//		segs = new Vector<Segment>();
-//		segs.add(new Segment(0, 2, 2));
-//		chr = new Chromosome(segs);
-//		p.addHaplotype(chr);
-//		for(int i=0;i<4;i++){
-//			p=p.evolve(20);
-//		}
-//		for(Chromosome c:p.sample(10)){
-//			c.smooth();
-//			c.print();
-//		}
-//	}
+	// public static void main(String[] args) {
+	// Vector<Segment> segs = new Vector<Segment>();
+	// segs.add(new Segment(0, 2, 1));
+	// Chromosome chr = new Chromosome(segs);
+	// Vector<Chromosome> haplo = new Vector<Chromosome>();
+	// haplo.add(chr);
+	// Population p = new Population(1, haplo);
+	// segs = new Vector<Segment>();
+	// segs.add(new Segment(0, 2, 2));
+	// chr = new Chromosome(segs);
+	// p.addHaplotype(chr);
+	// for(int i=0;i<4;i++){
+	// p=p.evolve(20);
+	// }
+	// for(Chromosome c:p.sample(10)){
+	// c.smooth();
+	// c.print();
+	// }
+	// }
 }
