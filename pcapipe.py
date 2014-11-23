@@ -20,7 +20,7 @@ def write_plot(prefix):
         out.write('yl<-paste("PC2(",round(eval$V1[2],digits=2),"%)",sep="")\n')
         out.write('evec<-read.table("{}.evec",skip=1)\n'.format(prefix))
         out.write('pdf("{}_pca.pdf")\n'.format(prefix))
-        out.write('p<-ggplot(data=evec,aes(x=V2,y=V3,color=V12),xlab=xl,ylab=yl)\n')
+        out.write('p<-ggplot(data=evec,aes(x=V2,y=V3,color=V12))+xlab(xl)+ylab(yl)\n')
         out.write('p+geom_point(lwd=4)\n')
         out.write('dev.off()\n')
     print('write plot PCA script to {}.r\n'.format(prefix))
