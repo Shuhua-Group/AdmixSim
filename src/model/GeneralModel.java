@@ -181,6 +181,26 @@ public class GeneralModel {
 	public Population getPop() {
 		return pop;
 	}
+	
+//	public void print(){
+//		System.out.println("Initial anc");
+//		for(int n:initAnc){
+//			System.out.print(n+" ");
+//		}
+//		System.out.println();
+//		System.out.println("Nes");
+//		for(int n:Nes){
+//			System.out.print(n+" ");
+//		}
+//		System.out.println();
+//		System.out.println("Proportions");
+//		for(double [] pp:props){
+//			for(double p:pp){
+//				System.out.print(p+" ");
+//			}
+//			System.out.println();
+//		}
+//	}
 	/*
 	 * public static void main(String[] args) { // TODO Auto-generated method
 	 * stub

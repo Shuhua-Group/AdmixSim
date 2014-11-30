@@ -67,6 +67,7 @@ public class AdmSimulator {
 			random = new Random();
 		}
 		GeneralModel gm = new GeneralModel(parFile, gen, nanc, random);
+		// gm.print();
 		gm.evolve(length);
 		output(prefix, outprefix, gm.getPop(), gm.getInitAnc(), nsample);
 	}
@@ -88,6 +89,7 @@ public class AdmSimulator {
 			for (ChromPair ind : admp.sample(nsample)) {
 				for (int k = 1; k <= 2; k++) {
 					Chromosome chr = ind.getChromosome(k);
+					chr.smooth();
 					mpbw.write(ca.copy(anchaps, map, chr));
 					mpbw.newLine();
 					for (Segment seg : chr.getSegments()) {
