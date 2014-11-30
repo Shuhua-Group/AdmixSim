@@ -106,7 +106,7 @@ public class Chromosome {
 		seg1 = segments.firstElement();
 		for (int i = 1; i < segments.size(); i++) {
 			seg2 = segments.elementAt(i);
-			if (seg1.getLabel() == seg2.getLabel()) {
+			if (seg1.getLabel() / 10000 == seg2.getLabel() / 10000) {
 				seg1.setEnd(seg2.getEnd());
 			} else {
 				newSeg.add(seg1);
