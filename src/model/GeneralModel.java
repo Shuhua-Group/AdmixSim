@@ -66,7 +66,7 @@ public class GeneralModel {
 						initAnc[j] = Integer.parseInt(tmp[j]);
 					}
 				}
-				if (tmp.length > nanc) {
+				if (tmp.length > nanc && i < gen) {
 					Nes[i] = Integer.parseInt(tmp[0]);
 					for (int j = 0; j < nanc; j++) {
 						props[i][j] = Double.parseDouble(tmp[j + 1]);
