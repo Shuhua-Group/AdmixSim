@@ -44,7 +44,6 @@ public class Chromosome {
 	}
 
 	public int indexOf(double pos) {
-		//find the index of segment, by binary search
 		if (breaks.size() == 0)
 			return 0;
 		else {
@@ -107,7 +106,7 @@ public class Chromosome {
 		seg1 = segments.firstElement();
 		for (int i = 1; i < segments.size(); i++) {
 			seg2 = segments.elementAt(i);
-			if (seg1.getLabel()/10000 == seg2.getLabel()/10000) {
+			if (seg1.getLabel() == seg2.getLabel()) {
 				seg1.setEnd(seg2.getEnd());
 			} else {
 				newSeg.add(seg1);

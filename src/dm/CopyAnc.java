@@ -75,7 +75,7 @@ public class CopyAnc {
 		int right = position.size();
 		int mid = (left + right + 1) / 2;
 		while (left < right) {
-			// System.out.printf("%d %d %d\n", left, right, mid);
+			//System.out.printf("%d %d %d\n", left, right, mid);
 			if (pos > position.elementAt(mid))
 				left = mid;
 			else
@@ -103,22 +103,22 @@ public class CopyAnc {
 		return sb.toString();
 	}
 
-	// public static void main(String[] args) {
-	// // TODO Auto-generated method stub
-	// Vector<Double> pp = new Vector<Double>();
-	// pp.add(0.0);
-	// Random rand = new Random();
-	// while (pp.lastElement() < 3) {
-	// pp.add(pp.lastElement() + rand.nextDouble());
-	// }
-	// Iterator<Double> it = pp.iterator();
-	// while (it.hasNext()) {
-	// System.out.printf("%.4f ", it.next());
-	// }
-	// CopyAnc ca = new CopyAnc();
-	// System.out.println("\n" + ca.indexOf(0.3, pp));
-	// String str = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-	// System.out.println(str.substring(0, 7));
-	// }
+//	public static void main(String[] args) {
+//		// TODO Auto-generated method stub
+//		Vector<Double> pp = new Vector<Double>();
+//		pp.add(0.0);
+//		Random rand = new Random();
+//		while (pp.lastElement() < 3) {
+//			pp.add(pp.lastElement() + rand.nextDouble());
+//		}
+//		Iterator<Double> it = pp.iterator();
+//		while (it.hasNext()) {
+//			System.out.printf("%.4f ", it.next());
+//		}
+//		CopyAnc ca = new CopyAnc();
+//		System.out.println("\n" + ca.indexOf(0.3, pp));
+//		String str = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+//		System.out.println(str.substring(0, 7));
+//	}
 
 }

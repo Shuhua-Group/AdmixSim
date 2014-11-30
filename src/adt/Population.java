@@ -6,13 +6,15 @@ import java.util.Vector;
 public class Population {
 	private int Ne;
 	private int label;
-	private Vector<Chromosome> haplotypes;
+	Random random;
+	private Vector<ChromPair> indivs;
 
-	public Population(int label, Vector<Chromosome> haplotypes) {
+	public Population(int label, Random random, Vector<ChromPair> indivs) {
 		super();
 		this.label = label;
-		this.haplotypes = haplotypes;
-		Ne = haplotypes.size() / 2;
+		this.random = random;
+		this.indivs = indivs;
+		Ne = indivs.size();
 	}
 
 	public int getLabel() {
@@ -29,73 +31,79 @@ public class Population {
 	}
 
 	public void updateNe() {
-		Ne = haplotypes.size() / 2;
+		Ne = indivs.size();
 	}
 
-	public Vector<Chromosome> getHaplotypes() {
-		return haplotypes;
+	public Vector<ChromPair> getIndivs() {
+		return indivs;
 	}
 
-	public void addHaplotype(Chromosome chrom) {
-		haplotypes.addElement(chrom);
+	public void addIndiv(ChromPair indiv) {
+		indivs.addElement(indiv);
 	}
 
-	public Vector<Chromosome> sample(int nsamp) {
-		Vector<Chromosome> samples = new Vector<Chromosome>();
-		int total = 2 * getNe();
-		Random random = new Random();
+	public Vector<ChromPair> sample(int nsamp) {
+		Vector<ChromPair> samples = new Vector<ChromPair>();
+		int total = getNe();
+		// Random random = new Random();
 		for (int i = 0; i < nsamp; i++) {
-			samples.add(haplotypes.elementAt(random.nextInt(total)));
+			samples.add(indivs.elementAt(random.nextInt(total)));
 		}
 		return samples;
 	}
 
 	public Population[] split(double prop) {
 		Population[] pops = new Population[2];
-		int npop1 = (int) (haplotypes.size() * prop);
+		int npop1 = (int) (indivs.size() * prop);
 		int[] index1 = new int[npop1];
 		Vector<Integer> index = new Vector<Integer>();
-		for (int i = 0; i < haplotypes.size(); i++)
+		for (int i = 0; i < indivs.size(); i++)
 			index.add(i);
 		int tmpSize, tmp;
-		Random random = new Random();
+		// Random random = new Random();
 		for (int i = 0; i < npop1; i++) {
 			tmpSize = index.size();
 			tmp = random.nextInt(tmpSize);
 			index1[i] = index.elementAt(tmp);
 			index.remove(tmp);
 		}
-		Vector<Chromosome> haplos = new Vector<Chromosome>();
+		Vector<ChromPair> inds = new Vector<ChromPair>();
 		for (int i = 0; i < npop1; i++) {
-			haplos.add(haplotypes.elementAt(index1[i]));
+			inds.add(indivs.elementAt(index1[i]));
 		}
-		pops[0] = new Population(getLabel(), haplos);
-		haplos = new Vector<Chromosome>();
+		pops[0] = new Population(getLabel(), random, inds);
+		inds = new Vector<ChromPair>();
 		for (int i : index) {
-			haplos.add(haplotypes.elementAt(i));
+			inds.add(indivs.elementAt(i));
 		}
-		pops[1] = new Population(getLabel() + 1, haplos);
+		pops[1] = new Population(getLabel() + 1, random, inds);
 		return pops;
 	}
 
 	public Population evolve(int Ne) {
-		Vector<Chromosome> haplos = new Vector<Chromosome>();
-		Random random = new Random();
-		int curNumHaplos = getNe() * 2;
-		int ind1, ind2;
+		Vector<ChromPair> inds = new Vector<ChromPair>();
+		// Random random = new Random();
+		int curNumInds = getNe();
+		int index1, index2;
 		for (int i = 0; i < Ne; i++) {
-			ind1 = random.nextInt(curNumHaplos);
-			ind2 = random.nextInt(curNumHaplos);
-			while (ind1 == ind2) {
-				ind2 = random.nextInt(curNumHaplos);
+			// randomly choose two individuals
+			index1 = random.nextInt(curNumInds);
+			index2 = random.nextInt(curNumInds);
+			while (index1 == index2) {
+				index2 = random.nextInt(curNumInds);
 			}
-			ChromPair cp = new ChromPair(haplotypes.elementAt(ind1),
-					haplotypes.elementAt(ind2));
+			// randomly choose one chromosome of first individual
+			int tmp = random.nextInt() % 2;
+			Chromosome hap1 = indivs.elementAt(index1).getChromosome(tmp);
+			tmp = random.nextInt() % 2;
+			// randomly choose one chromosome of another individual
+			Chromosome hap2 = indivs.elementAt(index2).getChromosome(tmp);
+			// recombination and form an offspring
+			ChromPair cp = new ChromPair(hap1, hap2, random);
 			cp = cp.recombine();
-			haplos.add(cp.getChromosome(1));
-			haplos.add(cp.getChromosome(2));
+			inds.add(cp);
 		}
-		return new Population(getLabel(), haplos);
+		return new Population(getLabel(), random, inds);
 	}
 
 	// public static void main(String[] args) {

@@ -10,8 +10,10 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Map;
+import java.util.Random;
 import java.util.Vector;
 
+import adt.ChromPair;
 import adt.Chromosome;
 import adt.Population;
 import adt.Segment;
@@ -22,12 +24,16 @@ public class AdmSimulator {
 		int gen = 1;
 		int nsample = 1;
 		int nanc = 2;
+		long seed = 0;
+		boolean setSeed = false;
 		double length = 1.0;
 		String parFile = "";
 		String prefix = "";
 		String outprefix = "";
 		// System.out.println(args.length);
-		if (args.length < 1	|| (args.length < 14 && (!args[0].equals("-h") || !args[0].equals("--help")))) {
+		if (args.length < 1
+				|| (args.length < 10 && (!args[0].equals("-h") || !args[0]
+						.equals("--help")))) {
 			System.err.println("Need more arguments than provided");
 			help();
 			System.exit(1);
@@ -49,15 +55,24 @@ public class AdmSimulator {
 				prefix = args[++i];
 			} else if (args[i].equals("-o") || args[i].equals("--output")) {
 				outprefix = args[++i];
+			} else if (args[i].equals("-s") || args[i].equals("--seed")) {
+				seed = Long.parseLong(args[++i]);
+				setSeed = true;
 			}
 		}
-		GeneralModel gm = new GeneralModel(parFile, gen, nanc);
+		Random random = null;
+		if (setSeed) {
+			random = new Random(seed);
+		} else {
+			random = new Random();
+		}
+		GeneralModel gm = new GeneralModel(parFile, gen, nanc, random);
 		gm.evolve(length);
 		output(prefix, outprefix, gm.getPop(), gm.getInitAnc(), nsample);
 	}
 
-	public static void output(String prefix, String outprefix, Population admp, int[] initAnc,
-			int nsample) {
+	public static void output(String prefix, String outprefix, Population admp,
+			int[] initAnc, int nsample) {
 		CopyAnc ca = new CopyAnc();
 		String hapfile = prefix + ".hap";
 		String mapfile = prefix + ".map";
@@ -70,15 +85,17 @@ public class AdmSimulator {
 		try {
 			mpbw = new BufferedWriter(new FileWriter(mixhapfile));
 			segbw = new BufferedWriter(new FileWriter(segsfile));
-			for (Chromosome chr : admp.sample(nsample)) {
-				mpbw.write(ca.copy(anchaps, map, chr));
-				mpbw.newLine();
-				chr.smooth();
-				for (Segment seg : chr.getSegments()) {
-					segbw.write(String.format("%.8f\t%.8f\t%d",
-							seg.getStart(), seg.getEnd(),
-							seg.getLabel() / 10000));
-					segbw.newLine();
+			for (ChromPair ind : admp.sample(nsample)) {
+				for (int k = 1; k <= 2; k++) {
+					Chromosome chr = ind.getChromosome(k);
+					mpbw.write(ca.copy(anchaps, map, chr));
+					mpbw.newLine();
+					for (Segment seg : chr.getSegments()) {
+						segbw.write(String.format("%.8f\t%.8f\t%d",
+								seg.getStart(), seg.getEnd(),
+								seg.getLabel() / 10000));
+						segbw.newLine();
+					}
 				}
 			}
 			mpbw.flush();
@@ -101,10 +118,11 @@ public class AdmSimulator {
 		System.out.println("	-g/--gen	generation since admixture");
 		System.out.println("	-k/--nanc	number of ancestral population");
 		System.out.println("	-l/--len	length of chromosome to be simulated");
-		System.out.println("	-f/--file	file name of model description parameters");
-		System.out.println("	-n/--samp	number of haplotypes sampled from admixed population");
+		System.out.println("	-f/--file	model description parameter file");
+		System.out.println("	-n/--samp	number of individuals sampled");
 		System.out.println("	-p/--prefix	prefix of input file");
 		System.out.println("	-o/--output	prefix of output file");
+		System.out.println("	-s/--seed	seed of random generator");
 	}
 
 }

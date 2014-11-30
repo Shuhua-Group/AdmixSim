@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.Random;
 import java.util.Vector;
 
+import adt.ChromPair;
 import adt.Chromosome;
 import adt.Population;
 import adt.Segment;
@@ -15,20 +16,25 @@ public class GeneralModel {
 	private int[] Nes;
 	private double[][] props;
 	private Population pop;
+	Random random;
 
-	public GeneralModel(String filename, int gen, int nanc) {
+	public GeneralModel(String filename, int gen, int nanc, Random random) {
 		readParams(filename, gen, nanc);
+		this.random = random;
 	}
 
-	public GeneralModel(int[] Nes, double[][] props) {
+	public GeneralModel(int[] Nes, double[][] props, Random random) {
 		this.Nes = Nes;
 		this.props = props;
+		this.random = random;
 	}
 
-	public GeneralModel(int[] Nes, double[][] props, Population pop) {
+	public GeneralModel(int[] Nes, double[][] props, Population pop,
+			Random random) {
 		this.Nes = Nes;
 		this.props = props;
 		this.pop = pop;
+		this.random = random;
 	}
 
 	public void readParams(String filename, int gen, int nanc) {
@@ -125,25 +131,25 @@ public class GeneralModel {
 			System.exit(1);
 		}
 		for (int i = 0; i < Nes.length; i++) {
-			int nhapPrev = 0;
+			int numbIndsPrev = 0;
 			int curNe = Nes[i];
 			int numbAnc = props[i].length;
-			int[] nhapCur = new int[numbAnc];
-			int sumHapCur = 0;
+			int[] numbInds = new int[numbAnc];
+			int sumNumbInds = 0;
 			for (int j = 0; j < numbAnc; j++) {
-				nhapCur[j] = (int) (curNe * 2 * props[i][j]);
-				sumHapCur += nhapCur[j];
+				numbInds[j] = (int) (curNe * props[i][j]);
+				sumNumbInds += numbInds[j];
 			}
-			// prepare haplotypes in current generation
-			nhapPrev = curNe * 2 - sumHapCur;
-			Vector<Chromosome> haplosCur = new Vector<Chromosome>();
-			if (nhapPrev > 0 && pop != null) {
-				haplosCur = pop.sample(nhapPrev);
+			// prepare individuals in current generation
+			numbIndsPrev = curNe - sumNumbInds;
+			Vector<ChromPair> indsCur = new Vector<ChromPair>();
+			if (numbIndsPrev > 0 && pop != null) {
+				indsCur = pop.sample(numbIndsPrev);
 			}
-			Random random = new Random();
+			// Random random = new Random();
 			for (int j = 0; j < numbAnc; j++) {
-				if (nhapCur[j] > 0) {
-					for (int k = 0; k < nhapCur[j]; k++) {
+				if (numbInds[j] > 0) {
+					for (int k = 0; k < numbInds[j]; k++) {
 						Vector<Segment> segs = new Vector<Segment>();
 						// Label was used to distinguish segment from which
 						// ancestral population and which haplotype in
@@ -153,32 +159,16 @@ public class GeneralModel {
 						int label = random.nextInt(initAnc[j]) + 10000
 								* (j + 1);
 						segs.add(new Segment(0.0, len, label));
-						haplosCur.add(new Chromosome(segs));
+						Chromosome chr1 = new Chromosome(segs);
+						segs = new Vector<Segment>();
+						label = random.nextInt(initAnc[j]) + 10000 * (j + 1);
+						Chromosome chr2 = new Chromosome(segs);
+						indsCur.add(new ChromPair(chr1, chr2, random));
 					}
 				}
 			}
-			Population tmpPop = new Population(0, haplosCur);
-			pop = tmpPop.evolve(curNe);
-//			Vector<Chromosome> tmp = new Vector<Chromosome>();
-//			Vector<Integer> index = new Vector<Integer>();
-//			for (int j = 0; j < haplosCur.size(); j++) {
-//				index.add(j);
-//			}
-//			int t = index.size();
-//			while (t > 0) {
-//				int ind1 = random.nextInt(t);
-//				index.remove(ind1);
-//				t = index.size();
-//				int ind2 = random.nextInt(t);
-//				index.remove(ind2);
-//				t = index.size();
-//				ChromPair cp = new ChromPair(haplosCur.elementAt(ind1),
-//						haplosCur.elementAt(ind2));
-//				cp = cp.recombine();
-//				tmp.add(cp.getChromosome(1));
-//				tmp.add(cp.getChromosome(2));
-//			}
-//			pop = new Population(0, tmp);
+			Population tmpPop = new Population(0, random, indsCur);
+			pop = tmpPop.evolve(tmpPop.getNe());
 		}
 
 	}
