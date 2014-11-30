@@ -118,7 +118,7 @@ public class AdmSimulator {
 		System.out.println("Arguments:");
 		System.out.println("	-h/--help	print help message");
 		System.out.println("	-g/--gen	generation since admixture");
-		System.out.println("	-k/--nanc	number of ancestral population");
+		System.out.println("	-k/--nanc	number of ancestral populations");
 		System.out.println("	-l/--len	length of chromosome to be simulated");
 		System.out.println("	-f/--file	model description parameter file");
 		System.out.println("	-n/--samp	number of individuals sampled");
