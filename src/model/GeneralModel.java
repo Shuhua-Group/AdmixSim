@@ -162,6 +162,7 @@ public class GeneralModel {
 						Chromosome chr1 = new Chromosome(segs);
 						segs = new Vector<Segment>();
 						label = random.nextInt(initAnc[j]) + 10000 * (j + 1);
+						segs.add(new Segment(0.0, len, label));
 						Chromosome chr2 = new Chromosome(segs);
 						indsCur.add(new ChromPair(chr1, chr2, random));
 					}
