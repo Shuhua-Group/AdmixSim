@@ -24,7 +24,9 @@ public class SmoothSegment {
 					start = tmp[0];
 					end = tmp[1];
 					label = tmp[2];
-				} else if (label.equals(tmp[2])) {
+				} else if (label.equals(tmp[2])
+						&& Double.parseDouble(end) == Double
+								.parseDouble(tmp[0])) {
 					// with the same label, update the end position
 					end = tmp[1];
 				} else {
@@ -36,7 +38,7 @@ public class SmoothSegment {
 					end = tmp[1];
 					label = tmp[2];
 				}
-				//System.out.println(label);
+				// System.out.println(label);
 			}
 			// output the last one
 			bw.write(start + "\t" + end + "\t" + label);
@@ -59,8 +61,7 @@ public class SmoothSegment {
 			sm.smooth(args[0], args[1]);
 		} else {
 			System.err.println("Warning: need more arguments than provided!");
-			System.err
-					.println("Usage: java -jar SmooothSegment.jar <input> <output>");
+			System.err.println("Usage: java -jar SmooothSegment.jar <input> <output>");
 		}
 	}
 
