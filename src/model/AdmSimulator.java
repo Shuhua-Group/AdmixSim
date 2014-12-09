@@ -81,17 +81,19 @@ public class AdmSimulator {
 		String segsfile = outprefix + ".seg";
 		Map<Integer, Vector<String>> anchaps = ca.readHaplo(hapfile, initAnc);
 		Vector<Double> map = ca.readMap(mapfile);
-		BufferedWriter mpbw = null;
+		BufferedWriter hapbw = null;
 		BufferedWriter segbw = null;
 		try {
-			mpbw = new BufferedWriter(new FileWriter(mixhapfile));
+			hapbw = new BufferedWriter(new FileWriter(mixhapfile));
 			segbw = new BufferedWriter(new FileWriter(segsfile));
 			for (ChromPair ind : admp.sample(nsample)) {
 				for (int k = 1; k <= 2; k++) {
 					Chromosome chr = ind.getChromosome(k);
-					chr.smooth();
-					mpbw.write(ca.copy(anchaps, map, chr));
-					mpbw.newLine();
+					//chr.smooth();
+					hapbw.write(ca.copy(anchaps, map, chr));
+					hapbw.newLine();
+					//chr.smooth();
+					//System.out.printf("%.6f\t%.6f\n",chr.getSegments().firstElement().getStart(),chr.getSegments().lastElement().getEnd());
 					for (Segment seg : chr.getSegments()) {
 						segbw.write(String.format("%.8f\t%.8f\t%d",
 								seg.getStart(), seg.getEnd(),
@@ -100,13 +102,13 @@ public class AdmSimulator {
 					}
 				}
 			}
-			mpbw.flush();
+			hapbw.flush();
 			segbw.flush();
-			if (mpbw != null) {
-				mpbw.close();
+			if (hapbw != null) {
+				hapbw.close();
 			}
 			if (segbw != null) {
-				mpbw.close();
+				segbw.close();
 			}
 		} catch (IOException e) {
 			e.printStackTrace();

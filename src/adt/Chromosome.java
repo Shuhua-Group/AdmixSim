@@ -103,23 +103,29 @@ public class Chromosome {
 	}
 
 	public void smooth() {
-		Vector<Segment> newSeg = new Vector<Segment>();
+		Vector<Segment> newSegs = new Vector<Segment>();
 		Segment seg1, seg2;
 		seg1 = segments.firstElement();
-		for (int i = 1; i < segments.size(); i++) {
+		int size = segments.size();
+		//System.out.println(size);
+		for (int i = 1; i < size; i++) {
 			seg2 = segments.elementAt(i);
-			if (seg1.getLabel() / 10000 == seg2.getLabel() / 10000) {
+			if ((seg1.getLabel() / 10000) == (seg2.getLabel() / 10000)) {
 				seg1.setEnd(seg2.getEnd());
 			} else {
-				newSeg.add(seg1);
+				newSegs.add(seg1);
 				seg1 = seg2;
 			}
 		}
-		newSeg.add(seg1);
-		segments = newSeg;
+		newSegs.add(seg1);
+		//System.out.println(newSegs.size());
+		segments = newSegs;
+		//System.out.println(segments.size());
 		// Below is very important to maintain the consistency between the
 		// number of breaks and segments
+		//System.out.println(breaks.size());
 		updateBreaks();
+		//System.out.println(breaks.size());
 	}
 
 	public void print() {
@@ -139,18 +145,31 @@ public class Chromosome {
 		}
 		breaks = tmp;
 	}
-	// public static void main(String[] args) {
-	// Vector<Segment> seg = new Vector<Segment>();
-	// for (int i = 0; i < 5; i++) {
-	// seg.add(new Segment(i * 0.2, i * 0.2 + .2, 1));
-	// }
-	// System.out.println(seg.elementAt(0).getEnd());
-	// Chromosome chr = new Chromosome(seg);
-	// System.out.print(chr.duplicate().getSegment(1).getEnd());
-	// System.out.println(chr.indexOf(0.999));
-	// Vector<Segment> ext = chr.extractSegment(0.7, 0.77);
-	// for(Segment s:ext){
-	// System.out.println("Segment: ("+s.getStart()+","+s.getEnd()+","+s.getLabel()+")");
-	// }
-	// }
+
+//	public static void main(String[] args) {
+//		Vector<Segment> seg = new Vector<Segment>();
+//		Random rand = new Random();
+//		for (int i = 0; i < 50; i++) {
+//			seg.add(new Segment(i * 0.2, i * 0.2 + .2, 10000 * rand.nextInt(2)));
+//		}
+//		// System.out.println(seg.elementAt(0).getEnd());
+//		Chromosome chr = new Chromosome(seg);
+//		System.out.println("Before smoothing");
+//		chr.print();
+//		chr.smooth();
+//		System.out.println("After smoothing");
+//		chr.print();
+//		// System.out.print(chr.duplicate().getSegment(1).getEnd());
+//		System.out.println(chr.indexOf(0.999));
+//		Vector<Segment> ext = chr.extractSegment(0, 1.77);
+//		Vector<Segment> ext2 = chr.extractSegment(1.77, 10);
+//		for (Segment s : ext) {
+//			System.out.println("Segment: (" + s.getStart() + "," + s.getEnd()
+//					+ "," + s.getLabel() + ")");
+//		}
+//		for (Segment s : ext2) {
+//			System.out.println("Segment: (" + s.getStart() + "," + s.getEnd()
+//					+ "," + s.getLabel() + ")");
+//		}
+//	}
 }
