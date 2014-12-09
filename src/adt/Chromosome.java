@@ -25,7 +25,9 @@ public class Chromosome {
 	}
 
 	public void addSegment(Segment segment) {
-		if (segments.size() > 0
+		if (segments == null) {
+			segments = new Vector<Segment>();
+		} else if (segments.size() > 0
 				&& segment.getStart() != segments.lastElement().getEnd()) {
 			System.err
 					.println("There is a gap between the newly added segment and the last segment, positions of newly add segment are shifted");
@@ -33,10 +35,10 @@ public class Chromosome {
 			segment.setEnd(prevEnd + segment.getLength());
 			segment.setStart(prevEnd);
 		}
-		if (segments.size() > 0)
+		if (segments.size() > 0) {
 			breaks.addElement(segment.getStart());
+		}
 		segments.add(segment);
-
 	}
 
 	public Segment getSegment(int index) {

@@ -9,7 +9,7 @@ public class Population {
 	Random random;
 	private Vector<ChromPair> indivs;
 
-	public Population(int label, Random random, Vector<ChromPair> indivs) {
+	public Population(int label, Vector<ChromPair> indivs, Random random) {
 		super();
 		this.label = label;
 		this.random = random;
@@ -71,12 +71,12 @@ public class Population {
 		for (int i = 0; i < npop1; i++) {
 			inds.add(indivs.elementAt(index1[i]));
 		}
-		pops[0] = new Population(getLabel(), random, inds);
+		pops[0] = new Population(getLabel(), inds, random);
 		inds = new Vector<ChromPair>();
 		for (int i : index) {
 			inds.add(indivs.elementAt(i));
 		}
-		pops[1] = new Population(getLabel() + 1, random, inds);
+		pops[1] = new Population(getLabel() + 1, inds, random);
 		return pops;
 	}
 
@@ -103,7 +103,7 @@ public class Population {
 			cp = cp.recombine();
 			inds.add(cp);
 		}
-		return new Population(getLabel(), random, inds);
+		return new Population(getLabel(), inds, random);
 	}
 
 	// public static void main(String[] args) {
