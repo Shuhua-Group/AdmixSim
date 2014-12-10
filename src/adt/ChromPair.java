@@ -56,11 +56,12 @@ public class ChromPair {
 			breakpoints[i] = random.nextDouble() * length;
 		}
 		breakpoints[breakNumber + 1] = length;
-		breakpoints = selectSort(breakpoints);
+		//breakpoints = selectSort(breakpoints);
+		selectSort(breakpoints);
 		return breakpoints;
 	}
 
-	public double[] selectSort(double[] data) {
+	public void selectSort(double[] data) {
 		int iMin;
 		for (int i = 0; i < data.length - 1; i++) {
 			iMin = i;
@@ -75,7 +76,7 @@ public class ChromPair {
 				data[iMin] = tmp;
 			}
 		}
-		return data;
+		//return data;
 	}
 
 	public ChromPair recombine() {

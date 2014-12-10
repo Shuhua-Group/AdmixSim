@@ -88,8 +88,9 @@ public class AdmSimulator {
 			segbw = new BufferedWriter(new FileWriter(segsfile));
 			for (ChromPair ind : admp.sample(nsample)) {
 				for (int k = 1; k <= 2; k++) {
-					Chromosome chr = ind.getChromosome(k);
-					//chr.smooth();
+					//Here must duplicate a new Chromosome to avoid change of original copy
+					Chromosome chr = ind.getChromosome(k).duplicate();
+					chr.smooth();
 					hapbw.write(ca.copy(anchaps, map, chr));
 					hapbw.newLine();
 					//chr.smooth();
