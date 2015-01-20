@@ -31,7 +31,7 @@ public class AdmSimulator {
 		double length = 1.0;
 		String parFile = "";
 		String prefix = "";
-		String outprefix = "";
+		String outprefix = "output";
 		if (args.length < 1 || (args.length < 4 && (!args[0].equals("-h") || !args[0].equals("--help")))) {
 			System.err.println("Need more arguments than provided, use -h/--help to get help");
 			help();
@@ -58,6 +58,14 @@ public class AdmSimulator {
 				seed = Long.parseLong(args[++i]);
 				setSeed = true;
 			}
+		}
+		if (parFile.length() == 0){
+			System.err.println("Model description file required");
+			System.exit(1);
+		}
+		if (prefix.length() == 0){
+			System.err.println("Input file prefix must be specified");
+			System.exit(1);
 		}
 		Random random = null;
 		if (setSeed) {
