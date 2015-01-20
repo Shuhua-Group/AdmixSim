@@ -1,7 +1,9 @@
 /*
- * AdmixModel Implemented in java
+ * AdmSimulator Implemented in java
  * Version: 1.2.0
  * Author: Young
+ * License: GNU GPL v3 http://www.gnu.org/licenses/gpl.html
+ * The software is free software and no guarantee, users at their own risks
  */
 
 package model;
@@ -22,7 +24,7 @@ import dm.CopyAnc;
 public class AdmSimulator {
 	public static void main(String[] args) {
 		int gen = 1;
-		int nsample = 1;
+		int nsample = 10;
 		int nanc = 2;
 		long seed = 0;
 		boolean setSeed = false;
@@ -30,11 +32,8 @@ public class AdmSimulator {
 		String parFile = "";
 		String prefix = "";
 		String outprefix = "";
-		// System.out.println(args.length);
-		if (args.length < 1
-				|| (args.length < 10 && (!args[0].equals("-h") || !args[0]
-						.equals("--help")))) {
-			System.err.println("Need more arguments than provided");
+		if (args.length < 1 || (args.length < 4 && (!args[0].equals("-h") || !args[0].equals("--help")))) {
+			System.err.println("Need more arguments than provided, use -h/--help to get help");
 			help();
 			System.exit(1);
 		}
@@ -47,11 +46,11 @@ public class AdmSimulator {
 				nanc = Integer.parseInt(args[++i]);
 			} else if (args[i].equals("-n") || args[i].equals("--samp")) {
 				nsample = Integer.parseInt(args[++i]);
-			} else if (args[i].equals("-l") || args[i].equals("--len")) {
+			} else if (args[i].equals("-l") || args[i].equals("--leng")) {
 				length = Double.parseDouble(args[++i]);
 			} else if (args[i].equals("-f") || args[i].equals("--file")) {
 				parFile = args[++i];
-			} else if (args[i].equals("-p") || args[i].equals("--prefix")) {
+			} else if (args[i].equals("-i") || args[i].equals("--input")) {
 				prefix = args[++i];
 			} else if (args[i].equals("-o") || args[i].equals("--output")) {
 				outprefix = args[++i];
@@ -67,7 +66,6 @@ public class AdmSimulator {
 			random = new Random();
 		}
 		GeneralModel gm = new GeneralModel(parFile, gen, nanc, random);
-		// gm.print();
 		gm.evolve(length);
 		output(prefix, outprefix, gm.getPop(), gm.getInitAnc(), nsample);
 	}
@@ -77,7 +75,7 @@ public class AdmSimulator {
 		CopyAnc ca = new CopyAnc();
 		String hapfile = prefix + ".hap";
 		String mapfile = prefix + ".map";
-		String mixhapfile = outprefix + "_mix.hap";
+		String mixhapfile = outprefix + ".hap";
 		String segsfile = outprefix + ".seg";
 		Map<Integer, Vector<String>> anchaps = ca.readHaplo(hapfile, initAnc);
 		Vector<Double> map = ca.readMap(mapfile);
@@ -93,12 +91,8 @@ public class AdmSimulator {
 					chr.smooth();
 					hapbw.write(ca.copy(anchaps, map, chr));
 					hapbw.newLine();
-					//chr.smooth();
-					//System.out.printf("%.6f\t%.6f\n",chr.getSegments().firstElement().getStart(),chr.getSegments().lastElement().getEnd());
 					for (Segment seg : chr.getSegments()) {
-						segbw.write(String.format("%.8f\t%.8f\t%d",
-								seg.getStart(), seg.getEnd(),
-								seg.getLabel() / 10000));
+						segbw.write(String.format("%.8f\t%.8f\t%d", seg.getStart(), seg.getEnd(), seg.getLabel() / 10000));
 						segbw.newLine();
 					}
 				}
@@ -117,17 +111,20 @@ public class AdmSimulator {
 	}
 
 	public static void help() {
-		System.out.println("Description: Admixture Model Simulator");
+		System.out.println("========================================================================================");
+		System.out.println("AdmixSim.jar");
+		System.out.println("Description: A forward-time simulator for generalized admixture model");
 		System.out.println("Arguments:");
-		System.out.println("	-h/--help	print help message");
-		System.out.println("	-g/--gen	generation since admixture");
-		System.out.println("	-k/--nanc	number of ancestral populations");
-		System.out.println("	-l/--len	length of chromosome to be simulated");
-		System.out.println("	-f/--file	model description parameter file");
-		System.out.println("	-n/--samp	number of individuals sampled");
-		System.out.println("	-p/--prefix	prefix of input file");
-		System.out.println("	-o/--output	prefix of output file");
-		System.out.println("	-s/--seed	seed of random generator");
+		System.out.println("	-h/--help	print help message [optional]");
+		System.out.println("	-f/--file	model description file [required]");
+		System.out.println("	-i/--input	prefix of input files [required]");
+		System.out.println("	-g/--gen	generations since admixture [optional, default: 1]");
+		System.out.println("	-k/--nanc	number of ancestral populations [optional, default: 2]");
+		System.out.println("	-l/--leng	length of chromosome to be simulated [optional, default: 1.0]");
+		System.out.println("	-n/--samp	number of individual(s) to be sampled [optional, default: 10]");
+		System.out.println("	-o/--output	prefix of output files [optional, default: output]");
+		System.out.println("	-s/--seed	seed of random generator [optional, default: current time]");
+		System.out.println("========================================================================================");
 	}
 
 }

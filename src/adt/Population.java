@@ -1,3 +1,9 @@
+/*
+ * AdmSimulator
+ * Population.java
+ * Here population consists a diploid individuals, in the form of Chromosome pair
+ * No mutation, no selection and no generation overlap
+ */
 package adt;
 
 import java.util.Random;
@@ -45,7 +51,6 @@ public class Population {
 	public Vector<ChromPair> sample(int nsamp) {
 		Vector<ChromPair> samples = new Vector<ChromPair>();
 		int total = getNe();
-		// Random random = new Random();
 		for (int i = 0; i < nsamp; i++) {
 			samples.add(indivs.elementAt(random.nextInt(total)));
 		}
@@ -60,7 +65,6 @@ public class Population {
 		for (int i = 0; i < indivs.size(); i++)
 			index.add(i);
 		int tmpSize, tmp;
-		// Random random = new Random();
 		for (int i = 0; i < npop1; i++) {
 			tmpSize = index.size();
 			tmp = random.nextInt(tmpSize);
@@ -82,7 +86,6 @@ public class Population {
 
 	public Population evolve(int Ne) {
 		Vector<ChromPair> inds = new Vector<ChromPair>();
-		// Random random = new Random();
 		int curNumInds = getNe();
 		int index1, index2;
 		for (int i = 0; i < Ne; i++) {
@@ -105,24 +108,4 @@ public class Population {
 		}
 		return new Population(getLabel(), inds, random);
 	}
-
-	// public static void main(String[] args) {
-	// Vector<Segment> segs = new Vector<Segment>();
-	// segs.add(new Segment(0, 2, 1));
-	// Chromosome chr = new Chromosome(segs);
-	// Vector<Chromosome> haplo = new Vector<Chromosome>();
-	// haplo.add(chr);
-	// Population p = new Population(1, haplo);
-	// segs = new Vector<Segment>();
-	// segs.add(new Segment(0, 2, 2));
-	// chr = new Chromosome(segs);
-	// p.addHaplotype(chr);
-	// for(int i=0;i<4;i++){
-	// p=p.evolve(20);
-	// }
-	// for(Chromosome c:p.sample(10)){
-	// c.smooth();
-	// c.print();
-	// }
-	// }
 }

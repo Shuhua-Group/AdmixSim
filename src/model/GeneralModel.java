@@ -1,3 +1,14 @@
+/*
+ * AdmSimulator
+ * GeneralModel.java
+ * Population admixture can be generalized to K ancestral populations and T waves.
+ * and the admixture can be fully modeled as TxK matrix, in which each element mij
+ * denote the gene flow strength from jth ancestral population at ith generation
+ * In each generation, the population size is N, then the number of individuals from
+ * jth ancestral population is N*mij, same as all others, and the rests are sampled
+ * from previous generation.
+ */
+
 package model;
 
 import java.io.BufferedReader;
@@ -38,7 +49,6 @@ public class GeneralModel {
 	}
 
 	public void readParams(String filename, int gen, int nanc) {
-		// initAnc = new int[nanc];
 		Nes = new int[gen];
 		props = new double[gen][nanc];
 		BufferedReader br = null;
@@ -59,13 +69,10 @@ public class GeneralModel {
 					isStart = true;
 				}
 				if (isStart && initAnc == null) {
-					System.err
-							.println("Uninitialized ancestral population number");
+					System.err.println("Uninitialized ancestral population number");
 					System.exit(0);
 				}
-				// String subStr = line.substring(0, line.indexOf("#"));
 				String[] tmp = line.split("\\s+");
-				// System.out.println(tmp.length);
 				if (!isStart && tmp.length >= nanc) {
 					initAnc = new int[nanc];
 					for (int j = 0; j < nanc; j++) {
@@ -78,10 +85,7 @@ public class GeneralModel {
 						props[i][j] = Double.parseDouble(tmp[j + 1]);
 					}
 					i++;
-				} // else {
-					// System.err.println("The number of columns does not match");
-					// System.err.println("Line skipped");
-					// }
+				}
 			}
 			if (br != null) {
 				br.close();
@@ -94,8 +98,7 @@ public class GeneralModel {
 	public boolean isValidNe() {
 		for (int ne : Nes) {
 			if (ne <= 0) {
-				System.err
-						.println("Effective Population Size must be positive");
+				System.err.println("Effective Population Size must be positive");
 				return false;
 			}
 		}
@@ -107,15 +110,13 @@ public class GeneralModel {
 			double sum = 0;
 			for (int j = 0; j < props[i].length; j++) {
 				if (props[i][j] < 0 || props[i][j] > 1) {
-					System.err
-							.println("Admixture proportion must be between 0 and 1");
+					System.err.println("Admixture proportion must be between 0 and 1");
 					return false;
 				}
 				sum += props[i][j];
 			}
 			if (i == 0 && sum != 1.0) {
-				System.err
-						.println("The proportion for initial generation must be 1");
+				System.err.println("The proportion for initial generation must be 1");
 				return false;
 			}
 			if (sum > 1) {
@@ -146,7 +147,6 @@ public class GeneralModel {
 			if (numbIndsPrev > 0 && pop != null) {
 				indsCur = pop.sample(numbIndsPrev);
 			}
-			// Random random = new Random();
 			for (int j = 0; j < numbAnc; j++) {
 				if (numbInds[j] > 0) {
 					for (int k = 0; k < numbInds[j]; k++) {
@@ -156,8 +156,7 @@ public class GeneralModel {
 						// ancestral population. The first number was set large
 						// to distinguish ancestral population, and the rest was
 						// used to distinguish haplotype
-						int label = random.nextInt(initAnc[j]) + 10000
-								* (j + 1);
+						int label = random.nextInt(initAnc[j]) + 10000 * (j + 1);
 						segs.add(new Segment(0.0, len, label));
 						Chromosome chr1 = new Chromosome(segs);
 						segs = new Vector<Segment>();
@@ -181,31 +180,4 @@ public class GeneralModel {
 	public Population getPop() {
 		return pop;
 	}
-
-	// public void print(){
-	// System.out.println("Initial anc");
-	// for(int n:initAnc){
-	// System.out.print(n+" ");
-	// }
-	// System.out.println();
-	// System.out.println("Nes");
-	// for(int n:Nes){
-	// System.out.print(n+" ");
-	// }
-	// System.out.println();
-	// System.out.println("Proportions");
-	// for(double [] pp:props){
-	// for(double p:pp){
-	// System.out.print(p+" ");
-	// }
-	// System.out.println();
-	// }
-	// }
-	/*
-	 * public static void main(String[] args) { // TODO Auto-generated method
-	 * stub
-	 * 
-	 * }
-	 */
-
 }

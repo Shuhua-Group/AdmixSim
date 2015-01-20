@@ -1,3 +1,13 @@
+/*
+ * AdmSimulator
+ * Segment.java
+ * A Segment has a start point, an end point and a label indicates which ancestral population
+ * and which haplotype originated.
+ * The label is combined information, with the last four digits indicate the serial of haplotype
+ * and the rest indicate ancestral. For example, label=10001 denotes from ancestral population
+ * 1 and the first haplotype from ancestral population.
+ * Warning, the maximum ancestral haplotypes allowed is 9999 for each ancestral population
+ */
 package adt;
 
 public class Segment {
@@ -49,9 +59,4 @@ public class Segment {
 	public Segment duplicate() {
 		return new Segment(start, end, label);
 	}
-
-	// public static void main(String[] args) {
-	// System.out.println("Java is different from C++");
-	//
-	// }
 }

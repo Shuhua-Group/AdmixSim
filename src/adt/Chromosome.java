@@ -1,3 +1,10 @@
+/*
+ * AdmSimulator
+ * Chromosome.java
+ * A Chromosome consists a serial segment, and the break points slice chromosome into segments
+ * Notes: segments are continuous, in which the end of previous segment is identical the start
+ * of current segment.
+ */
 package adt;
 
 import java.util.Vector;
@@ -27,10 +34,8 @@ public class Chromosome {
 	public void addSegment(Segment segment) {
 		if (segments == null) {
 			segments = new Vector<Segment>();
-		} else if (segments.size() > 0
-				&& segment.getStart() != segments.lastElement().getEnd()) {
-			System.err
-					.println("There is a gap between the newly added segment and the last segment, positions of newly add segment are shifted");
+		} else if (segments.size() > 0 && segment.getStart() != segments.lastElement().getEnd()) {
+			System.err.println("There is a gap between the newly added segment and the last segment, positions of newly add segment are shifted");
 			double prevEnd = segments.lastElement().getEnd();
 			segment.setEnd(prevEnd + segment.getLength());
 			segment.setStart(prevEnd);
@@ -46,6 +51,8 @@ public class Chromosome {
 	}
 
 	public int indexOf(double pos) {
+		//search the index of segment in which the position located
+		//by binary search
 		if (breaks.size() == 0)
 			return 0;
 		else {
@@ -58,14 +65,12 @@ public class Chromosome {
 			int left = 0;
 			int right = breaks.size();
 			int mid = (left + right + 1) / 2;
-			// System.out.println(left + " " + right + " " + mid);
 			while (left < right) {
 				if (pos > breaks.elementAt(mid))
 					left = mid;
 				else
 					right = mid - 1;
 				mid = (left + right + 1) / 2;
-				// System.out.println(left + " " + right + " " + mid);
 			}
 			return left + 1;
 		}
@@ -75,7 +80,6 @@ public class Chromosome {
 		Vector<Segment> extSegs = new Vector<Segment>();
 		int startIndex = indexOf(start);
 		int endIndex = indexOf(end);
-		// System.out.println("Start=" + startIndex + ",End=" + endIndex);
 		// if the start position is on the end of a segment, then move to next
 		if (start == segments.elementAt(startIndex).getEnd())
 			startIndex++;
@@ -103,11 +107,11 @@ public class Chromosome {
 	}
 
 	public void smooth() {
+		//combine adjacent segments originated from the same ancestry
 		Vector<Segment> newSegs = new Vector<Segment>();
 		Segment seg1, seg2;
 		seg1 = segments.firstElement();
 		int size = segments.size();
-		// System.out.println(size);
 		for (int i = 1; i < size; i++) {
 			seg2 = segments.elementAt(i);
 			if ((seg1.getLabel() / 10000) == (seg2.getLabel() / 10000)) {
@@ -118,20 +122,15 @@ public class Chromosome {
 			}
 		}
 		newSegs.add(seg1);
-		// System.out.println(newSegs.size());
 		segments = newSegs;
-		// System.out.println(segments.size());
 		// Below is very important to maintain the consistency between the
 		// number of breaks and segments
-		// System.out.println(breaks.size());
 		updateBreaks();
-		// System.out.println(breaks.size());
 	}
 
 	public void print() {
 		for (Segment s : segments) {
-			System.out.printf("%.8f\t%.8f\t%d\n", s.getStart(), s.getEnd(),
-					s.getLabel());
+			System.out.printf("%.8f\t%.8f\t%d\n", s.getStart(), s.getEnd(), s.getLabel());
 		}
 	}
 
@@ -145,31 +144,4 @@ public class Chromosome {
 		}
 		breaks = tmp;
 	}
-
-	// public static void main(String[] args) {
-	// Vector<Segment> seg = new Vector<Segment>();
-	// Random rand = new Random();
-	// for (int i = 0; i < 50; i++) {
-	// seg.add(new Segment(i * 0.2, i * 0.2 + .2, 10000 * rand.nextInt(2)));
-	// }
-	// // System.out.println(seg.elementAt(0).getEnd());
-	// Chromosome chr = new Chromosome(seg);
-	// System.out.println("Before smoothing");
-	// chr.print();
-	// chr.smooth();
-	// System.out.println("After smoothing");
-	// chr.print();
-	// // System.out.print(chr.duplicate().getSegment(1).getEnd());
-	// System.out.println(chr.indexOf(0.999));
-	// Vector<Segment> ext = chr.extractSegment(0, 1.77);
-	// Vector<Segment> ext2 = chr.extractSegment(1.77, 10);
-	// for (Segment s : ext) {
-	// System.out.println("Segment: (" + s.getStart() + "," + s.getEnd()
-	// + "," + s.getLabel() + ")");
-	// }
-	// for (Segment s : ext2) {
-	// System.out.println("Segment: (" + s.getStart() + "," + s.getEnd()
-	// + "," + s.getLabel() + ")");
-	// }
-	// }
 }
