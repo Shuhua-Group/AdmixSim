@@ -1,5 +1,5 @@
 /*
- * AdmSimulator Implemented in java
+ * AdmixSim Implemented in java
  * Version: 1.2.0
  * Author: Young
  * License: GNU GPL v3 http://www.gnu.org/licenses/gpl.html
@@ -21,7 +21,7 @@ import adt.Population;
 import adt.Segment;
 import dm.CopyAnc;
 
-public class AdmSimulator {
+public class AdmixSim {
 	public static void main(String[] args) {
 		int gen = 1;
 		int nsample = 10;
