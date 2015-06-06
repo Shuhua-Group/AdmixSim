@@ -1,3 +1,3 @@
 Generalized Admixture Models Simulator
 ========
-Details in wiki page : https://github.com/xyang619/AdmixSim/wiki
+Details in wiki page : https://github.com/xyang619/AdmixSim-java/wiki
