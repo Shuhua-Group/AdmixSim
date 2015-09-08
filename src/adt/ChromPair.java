@@ -15,12 +15,12 @@ import java.util.Vector;
 public class ChromPair {
 	private Chromosome chrom1;
 	private Chromosome chrom2;
-	Random random;
+	//Random random;
 
-	public ChromPair(Chromosome chrom1, Chromosome chrom2, Random random) {
+	public ChromPair(Chromosome chrom1, Chromosome chrom2) {
 		this.chrom1 = chrom1;
 		this.chrom2 = chrom2;
-		this.random = random;
+		//this.random = random;
 	}
 
 	public Chromosome getChromosome(int index) {
@@ -31,7 +31,7 @@ public class ChromPair {
 		}
 	}
 
-	int getPoissonNumber(double lambda) {
+	int getPoissonNumber(double lambda, Random random) {
 		/*
 		 * A simple algorithm to randomly generate Poisson distributed numbers
 		 * by Donald Knuth http://en.wikipedia.org/wiki/Donald_Knuth
@@ -46,8 +46,8 @@ public class ChromPair {
 		return number - 1;
 	}
 
-	public double[] breakPoints(double length) {
-		int breakNumber = getPoissonNumber(length);
+	public double[] breakPoints(double length, Random random) {
+		int breakNumber = getPoissonNumber(length, random);
 		double[] breakpoints = new double[breakNumber + 2];
 		breakpoints[0] = 0.0;
 		for (int i = 1; i <= breakNumber; i++) {
@@ -76,12 +76,12 @@ public class ChromPair {
 		}
 	}
 
-	public ChromPair recombine() {
+	public ChromPair recombine(Random random) {
 		if (chrom1.getLength() != chrom2.getLength()) {
 			System.err.println("Chromosome length differ, please check again");
 			return this;
 		}
-		double[] bps = breakPoints(chrom1.getLength());
+		double[] bps = breakPoints(chrom1.getLength(), random);
 		double start=bps[0];
 		double end;
 		Vector<Segment> segs1, segs2;
@@ -102,7 +102,6 @@ public class ChromPair {
 			}
 			start = end;
 		}
-		return new ChromPair(new Chromosome(segs1), new Chromosome(segs2),
-				random);
+		return new ChromPair(new Chromosome(segs1), new Chromosome(segs2));
 	}
 }

@@ -12,13 +12,13 @@ import java.util.Vector;
 public class Population {
 	private int Ne;
 	private int label;
-	Random random;
+	//Random random;
 	private Vector<ChromPair> indivs;
 
-	public Population(int label, Vector<ChromPair> indivs, Random random) {
+	public Population(int label, Vector<ChromPair> indivs) {
 		super();
 		this.label = label;
-		this.random = random;
+		//this.random = random;
 		this.indivs = indivs;
 		Ne = indivs.size();
 	}
@@ -48,7 +48,7 @@ public class Population {
 		indivs.addElement(indiv);
 	}
 
-	public Vector<ChromPair> sample(int nsamp) {
+	public Vector<ChromPair> sample(int nsamp, Random random) {
 		Vector<ChromPair> samples = new Vector<ChromPair>();
 		int total = getNe();
 		for (int i = 0; i < nsamp; i++) {
@@ -57,7 +57,7 @@ public class Population {
 		return samples;
 	}
 
-	public Population[] split(double prop) {
+	public Population[] split(double prop, Random random) {
 		Population[] pops = new Population[2];
 		int npop1 = (int) (indivs.size() * prop);
 		int[] index1 = new int[npop1];
@@ -75,16 +75,16 @@ public class Population {
 		for (int i = 0; i < npop1; i++) {
 			inds.add(indivs.elementAt(index1[i]));
 		}
-		pops[0] = new Population(getLabel(), inds, random);
+		pops[0] = new Population(getLabel(), inds);
 		inds = new Vector<ChromPair>();
 		for (int i : index) {
 			inds.add(indivs.elementAt(i));
 		}
-		pops[1] = new Population(getLabel() + 1, inds, random);
+		pops[1] = new Population(getLabel() + 1, inds);
 		return pops;
 	}
 
-	public Population evolve(int Ne) {
+	public Population evolve(int Ne, Random random) {
 		Vector<ChromPair> inds = new Vector<ChromPair>();
 		int curNumInds = getNe();
 		int index1, index2;
@@ -96,16 +96,20 @@ public class Population {
 				index2 = random.nextInt(curNumInds);
 			}
 			// randomly choose one chromosome of first individual
-			int tmp = random.nextInt() % 2;
-			Chromosome hap1 = indivs.elementAt(index1).getChromosome(tmp);
-			tmp = random.nextInt() % 2;
+			//int tmp = random.nextInt() % 2;
+			//Chromosome hap1 = indivs.elementAt(index1).getChromosome(tmp);
+			//tmp = random.nextInt() % 2;
 			// randomly choose one chromosome of another individual
-			Chromosome hap2 = indivs.elementAt(index2).getChromosome(tmp);
+			//Chromosome hap2 = indivs.elementAt(index2).getChromosome(tmp);
 			// recombination and form an offspring
-			ChromPair cp = new ChromPair(hap1, hap2, random);
-			cp = cp.recombine();
-			inds.add(cp);
+			//ChromPair cp = new ChromPair(hap1, hap2, random);
+			//cp = cp.recombine(); 
+			int tmp = random.nextInt() % 2;
+			Chromosome gamete1 = indivs.elementAt(index1).recombine(random).getChromosome(tmp);
+			tmp = random.nextInt() % 2;
+			Chromosome gamete2 = indivs.elementAt(index2).recombine(random).getChromosome(tmp);
+			inds.add(new ChromPair(gamete1, gamete2));
 		}
-		return new Population(getLabel(), inds, random);
+		return new Population(getLabel(), inds);
 	}
 }

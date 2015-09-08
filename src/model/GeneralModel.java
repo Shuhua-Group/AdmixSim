@@ -23,40 +23,39 @@ import adt.Population;
 import adt.Segment;
 
 public class GeneralModel {
-	private int[] initAnc;
-	private int[] Nes;
-	private double[][] props;
+	private Vector<Integer> initAnc;
+	private Vector<Integer> Nes;
+	private Vector<Vector<Double>> props;
 	private Population pop;
-	Random random;
+	//Random random;
 
-	public GeneralModel(String filename, int gen, int nanc, Random random) {
-		readParams(filename, gen, nanc);
-		this.random = random;
+	public GeneralModel(String filename) {
+		readParams(filename);
+		//this.random = random;
 	}
 
-	public GeneralModel(int[] Nes, double[][] props, Random random) {
+	public GeneralModel(Vector<Integer> Nes, Vector<Vector<Double>> props) {
 		this.Nes = Nes;
 		this.props = props;
-		this.random = random;
+		//this.random = random;
 	}
 
-	public GeneralModel(int[] Nes, double[][] props, Population pop,
-			Random random) {
+	public GeneralModel(Vector<Integer> Nes, Vector<Vector<Double>> props, Population pop) {
 		this.Nes = Nes;
 		this.props = props;
 		this.pop = pop;
-		this.random = random;
+		//this.random = random;
 	}
 
-	public void readParams(String filename, int gen, int nanc) {
-		Nes = new int[gen];
-		props = new double[gen][nanc];
+	public void readParams(String filename) {
+		Nes = new Vector<Integer>();
+		props = new Vector<Vector<Double>>();
 		BufferedReader br = null;
 		boolean isStart = false;
 		try {
 			br = new BufferedReader(new FileReader(filename));
 			String line;
-			int i = 0;
+			//int i = 0;
 			while ((line = br.readLine()) != null) {
 				// remove comments
 				if (line.startsWith("#")) {
@@ -67,25 +66,40 @@ public class GeneralModel {
 				}
 				if (line.startsWith("//")) {
 					isStart = true;
+					continue;
 				}
 				if (isStart && initAnc == null) {
 					System.err.println("Uninitialized ancestral population number");
 					System.exit(0);
 				}
 				String[] tmp = line.split("\\s+");
-				if (!isStart && tmp.length >= nanc) {
-					initAnc = new int[nanc];
-					for (int j = 0; j < nanc; j++) {
-						initAnc[j] = Integer.parseInt(tmp[j]);
+//				if (!isStart && tmp.length >= nanc) {
+//					initAnc = new int[nanc];
+//					for (int j = 0; j < nanc; j++) {
+//						initAnc[j] = Integer.parseInt(tmp[j]);
+//					}
+//				}
+				if (!isStart && tmp.length > 0) {
+					initAnc = new Vector<Integer>();
+					for (int j = 0; j < tmp.length; j++) {
+						initAnc.add(Integer.parseInt(tmp[j]));
 					}
 				}
-				if (tmp.length > nanc && i < gen) {
-					Nes[i] = Integer.parseInt(tmp[0]);
-					for (int j = 0; j < nanc; j++) {
-						props[i][j] = Double.parseDouble(tmp[j + 1]);
+				if (isStart && tmp.length > 0) {
+					Nes.add(Integer.parseInt(tmp[0]));
+					Vector<Double> row = new Vector<Double>();
+					for (int j = 1; j < tmp.length; j++) {
+						row.add(Double.parseDouble(tmp[j]));
 					}
-					i++;
+					props.add(row);
 				}
+//				if (tmp.length > nanc && i < gen) {
+//					Nes[i] = Integer.parseInt(tmp[0]);
+//					for (int j = 0; j < nanc; j++) {
+//						props[i][j] = Double.parseDouble(tmp[j + 1]);
+//					}
+//					i++;
+//				}
 			}
 			if (br != null) {
 				br.close();
@@ -106,14 +120,14 @@ public class GeneralModel {
 	}
 
 	public boolean isValidProp() {
-		for (int i = 0; i < props.length; i++) {
+		for (int i = 0; i < props.size(); i++) {
 			double sum = 0;
-			for (int j = 0; j < props[i].length; j++) {
-				if (props[i][j] < 0 || props[i][j] > 1) {
+			for (int j = 0; j < props.elementAt(i).size(); j++) {
+				if (props.elementAt(i).elementAt(j) < 0 || props.elementAt(i).elementAt(j) > 1) {
 					System.err.println("Admixture proportion must be between 0 and 1");
 					return false;
 				}
-				sum += props[i][j];
+				sum += props.elementAt(i).elementAt(j);
 			}
 			if (i == 0 && sum != 1.0) {
 				System.err.println("The proportion for initial generation must be 1");
@@ -127,25 +141,25 @@ public class GeneralModel {
 		return true;
 	}
 
-	public void evolve(double len) {
+	public void evolve(double len, Random random) {
 		if (!isValidNe() || !isValidProp()) {
 			System.exit(1);
 		}
-		for (int i = 0; i < Nes.length; i++) {
+		for (int i = 0; i < Nes.size(); i++) {
 			int numbIndsPrev = 0;
-			int curNe = Nes[i];
-			int numbAnc = props[i].length;
+			int curNe = Nes.elementAt(i);
+			int numbAnc = props.elementAt(i).size();
 			int[] numbInds = new int[numbAnc];
 			int sumNumbInds = 0;
 			for (int j = 0; j < numbAnc; j++) {
-				numbInds[j] = (int) (curNe * props[i][j]);
+				numbInds[j] = (int) (curNe * props.elementAt(i).elementAt(j));
 				sumNumbInds += numbInds[j];
 			}
 			// prepare individuals in current generation
 			numbIndsPrev = curNe - sumNumbInds;
 			Vector<ChromPair> indsCur = new Vector<ChromPair>();
 			if (numbIndsPrev > 0 && pop != null) {
-				indsCur = pop.sample(numbIndsPrev);
+				indsCur = pop.sample(numbIndsPrev, random);
 			}
 			for (int j = 0; j < numbAnc; j++) {
 				if (numbInds[j] > 0) {
@@ -156,24 +170,24 @@ public class GeneralModel {
 						// ancestral population. The first number was set large
 						// to distinguish ancestral population, and the rest was
 						// used to distinguish haplotype
-						int label = random.nextInt(initAnc[j]) + 10000 * (j + 1);
+						int label = random.nextInt(initAnc.elementAt(j)) + 10000 * (j + 1);
 						segs.add(new Segment(0.0, len, label));
 						Chromosome chr1 = new Chromosome(segs);
 						segs = new Vector<Segment>();
-						label = random.nextInt(initAnc[j]) + 10000 * (j + 1);
+						label = random.nextInt(initAnc.elementAt(j)) + 10000 * (j + 1);
 						segs.add(new Segment(0.0, len, label));
 						Chromosome chr2 = new Chromosome(segs);
-						indsCur.add(new ChromPair(chr1, chr2, random));
+						indsCur.add(new ChromPair(chr1, chr2));
 					}
 				}
 			}
-			Population tmpPop = new Population(0, indsCur, random);
-			pop = tmpPop.evolve(tmpPop.getNe());
+			Population tmpPop = new Population(0, indsCur);
+			pop = tmpPop.evolve(tmpPop.getNe(), random);
 		}
 
 	}
 
-	public int[] getInitAnc() {
+	public Vector<Integer> getInitAnc() {
 		return initAnc;
 	}
 

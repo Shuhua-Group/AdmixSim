@@ -36,7 +36,7 @@ public class CopyAnc {
 	}
 
 	public Map<Integer, Vector<String>> readHaplo(String haplofile,
-			int[] initAnc) {
+			Vector<Integer> initAnc) {
 		Map<Integer, Vector<String>> anchaps = new HashMap<Integer, Vector<String>>();
 		BufferedReader br = null;
 		try {
@@ -46,7 +46,7 @@ public class CopyAnc {
 			Vector<String> haps = new Vector<String>();
 			anchaps.put(key, haps);
 			int nInd = 0;
-			int nAnc = initAnc[0];
+			int nAnc = initAnc.elementAt(0);
 			while ((line = br.readLine()) != null) {
 				if (nInd < nAnc) {
 					anchaps.get(key).add(line);
@@ -54,7 +54,7 @@ public class CopyAnc {
 				} else {
 					key++;
 					nInd = 0;
-					nAnc = initAnc[key - 1];
+					nAnc = initAnc.elementAt(key - 1);
 					haps = new Vector<String>();
 					anchaps.put(key, haps);
 					anchaps.get(key).add(line);
