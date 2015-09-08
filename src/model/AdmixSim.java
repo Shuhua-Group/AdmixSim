@@ -53,7 +53,7 @@ public class AdmixSim {
 				nsample = Integer.parseInt(args[++i]);
 			} else if (args[i].equals("-l") || args[i].equals("--length")) {
 				length = Double.parseDouble(args[++i]);
-			} else if (args[i].equals("-f") || args[i].equals("--file")) {
+			} else if (args[i].equals("-f") || args[i].equals("--modfile")) {
 				parFile = args[++i];
 			//} else if (args[i].equals("-i") || args[i].equals("--input")) {
 			//	prefix = args[++i];
@@ -133,7 +133,7 @@ public class AdmixSim {
 		System.out.println("Description: A forward-time simulator for generalized admixture model");
 		System.out.println("Arguments:");
 		System.out.println("\t-h/--help\tPrint help message [optional]");
-		System.out.println("\t-f/--file\tModel description file [required]");
+		System.out.println("\t-f/--modfile\tModel description file [required]");
 		System.out.println("\t-iM/--mapfile\tPrefix of input map file [required]");
 		System.out.println("\t-iH/--hapfile\tPrefix of input ancestral haplotype file [required]");
 		//System.out.println("	-g/--gen	generations since admixture [optional, default: 1]");
