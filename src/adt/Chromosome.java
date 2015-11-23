@@ -10,6 +10,7 @@ package adt;
 import java.util.Vector;
 
 public class Chromosome {
+	
 	private Vector<Segment> segments;
 	private Vector<Double> breaks;
 
@@ -32,7 +33,7 @@ public class Chromosome {
 	}
 
 	public void addSegment(Segment segment) {
-		if (segments == null) {
+		if (null == segments) {
 			segments = new Vector<Segment>();
 		} else if (segments.size() > 0 && segment.getStart() != segments.lastElement().getEnd()) {
 			System.err.println("There is a gap between the newly added segment and the last segment, positions of newly add segment are shifted");
@@ -114,7 +115,7 @@ public class Chromosome {
 		int size = segments.size();
 		for (int i = 1; i < size; i++) {
 			seg2 = segments.elementAt(i);
-			if ((seg1.getLabel() / 10000) == (seg2.getLabel() / 10000)) {
+			if ((seg1.getLabel() / 1000000) == (seg2.getLabel() / 1000000)) {
 				seg1.setEnd(seg2.getEnd());
 			} else {
 				newSegs.add(seg1);
@@ -135,6 +136,7 @@ public class Chromosome {
 	}
 
 	public void updateBreaks() {
+		//maintain the consistency of break points
 		Vector<Double> tmp = new Vector<Double>();
 		for (Segment seg : segments) {
 			tmp.add(seg.getEnd());

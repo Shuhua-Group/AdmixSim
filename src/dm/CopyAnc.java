@@ -16,7 +16,12 @@ import adt.Chromosome;
 import adt.Segment;
 
 public class CopyAnc {
+	
 	public Vector<Double> readMap(String mapfile) {
+		/*
+		 * reading position for each locus in the genetic map file
+		 * return a vector of position
+		 */
 		Vector<Double> position = new Vector<Double>();
 		BufferedReader br = null;
 		try {
@@ -35,8 +40,11 @@ public class CopyAnc {
 		return position;
 	}
 
-	public Map<Integer, Vector<String>> readHaplo(String haplofile,
-			Vector<Integer> initAnc) {
+	public Map<Integer, Vector<String>> readHaplo(String haplofile, Vector<Integer> initAnc) {
+		/*
+		 * reading ancestral haplotypes from file, and return a map with key as population label 
+		 * and value as a vector of haplotypes
+		 */
 		Map<Integer, Vector<String>> anchaps = new HashMap<Integer, Vector<String>>();
 		BufferedReader br = null;
 		try {
@@ -71,6 +79,10 @@ public class CopyAnc {
 	}
 
 	public int indexOf(double pos, Vector<Double> position) {
+		/*
+		 * find the nearest genetic locus by given the genetic position
+		 * binary search 
+		 */
 		if (position.size() == 0)
 			return 0;
 		if (pos <= position.firstElement())
@@ -87,19 +99,23 @@ public class CopyAnc {
 				right = mid - 1;
 			mid = (left + right + 1) / 2;
 		}
-		if (Math.abs(pos - position.elementAt(mid)) > Math.abs(pos
-				- position.elementAt(mid + 1)))
+		if (Math.abs(pos - position.elementAt(mid)) > Math.abs(pos - position.elementAt(mid + 1)))
 			return left + 1;
 		else
 			return left;
 	}
 
-	public String copy(Map<Integer, Vector<String>> anchaps,
-			Vector<Double> pos, Chromosome chr) {
+	public String copy(Map<Integer, Vector<String>> anchaps, Vector<Double> pos, Chromosome chr) {
+		/*
+		 * copy the corresponding ancestry to fill in the segment,
+		 * the label in segment are combined information with the digits larger than 4 digits as ancestry label,
+		 * and the last four digits as the label from which haplotypes to copy
+		 * for example 10005, indicates ancestry from ancestry 1 and copy from the 5th haplotype
+		 */
 		StringBuilder sb = new StringBuilder();
 		for (Segment seg : chr.getSegments()) {
-			int key = seg.getLabel() / 10000;
-			int ihap = seg.getLabel() % 10000;
+			int key = seg.getLabel() / 1000000;
+			int ihap = seg.getLabel() % 1000000;
 			int start = indexOf(seg.getStart(), pos);
 			int end = indexOf(seg.getEnd(), pos);
 			String tmp = anchaps.get(key).elementAt(ihap).substring(start, end);

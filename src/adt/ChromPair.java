@@ -13,6 +13,7 @@ import java.util.Random;
 import java.util.Vector;
 
 public class ChromPair {
+	
 	private Chromosome chrom1;
 	private Chromosome chrom2;
 	//Random random;
@@ -31,14 +32,15 @@ public class ChromPair {
 		}
 	}
 
-	int getPoissonNumber(double lambda, Random random) {
+	int getPoisonNumber(double lambda, Random random) {
 		/*
-		 * A simple algorithm to randomly generate Poisson distributed numbers
+		 * A simple algorithm to randomly generate Poison distributed numbers
 		 * by Donald Knuth http://en.wikipedia.org/wiki/Donald_Knuth
 		 */
 		double length = Math.exp(-lambda);
 		double prob = 1.0;
 		int number = 0;
+		
 		do {
 			number++;
 			prob *= random.nextDouble();
@@ -47,38 +49,42 @@ public class ChromPair {
 	}
 
 	public double[] breakPoints(double length, Random random) {
-		int breakNumber = getPoissonNumber(length, random);
+		/* 
+		 * generate break points along the chromosome
+		 * firstly, generate the number of break points following Poison distribution
+		 * secondly, randomly add break points to the chromosome
+		 */
+		int breakNumber = getPoisonNumber(length, random);
 		double[] breakpoints = new double[breakNumber + 2];
 		breakpoints[0] = 0.0;
+		
 		for (int i = 1; i <= breakNumber; i++) {
 			breakpoints[i] = random.nextDouble() * length;
 		}
 		breakpoints[breakNumber + 1] = length;
-		selectSort(breakpoints);
+		insertSort(breakpoints);
 		return breakpoints;
 	}
 
-	public void selectSort(double[] data) {
-		//sorting data by select sort, can be improved later
-		int iMin;
-		for (int i = 0; i < data.length - 1; i++) {
-			iMin = i;
-			for (int j = i + 1; j < data.length; j++) {
-				if (data[j] < data[iMin]) {
-					iMin = j;
-				}
+	public void insertSort(double[] data) {
+		//sorting data by insertSort
+		for (int i = 1; i < data.length; i++) {
+			double key =data[i];
+			int j = i;
+			while (j > 0 && data[j-1] > key){
+				data[j] = data[j-1];
+				j--;
 			}
-			if (iMin != i) {
-				double tmp = data[i];
-				data[i] = data[iMin];
-				data[iMin] = tmp;
-			}
+			data[j] = key;
 		}
 	}
 
 	public ChromPair recombine(Random random) {
+		/*
+		 * mimic recombination of diploids
+		 */
 		if (chrom1.getLength() != chrom2.getLength()) {
-			System.err.println("Chromosome length differ, please check again");
+			System.err.println("Chromosome length differs, please check again");
 			return this;
 		}
 		double[] bps = breakPoints(chrom1.getLength(), random);
@@ -87,6 +93,7 @@ public class ChromPair {
 		Vector<Segment> segs1, segs2;
 		segs1 = new Vector<Segment>();
 		segs2 = new Vector<Segment>();
+		
 		for(int i=1;i<bps.length;i++){
 			end=bps[i];
 			if (i % 2 == 1) {

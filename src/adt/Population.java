@@ -16,7 +16,7 @@ public class Population {
 	private Vector<ChromPair> indivs;
 
 	public Population(int label, Vector<ChromPair> indivs) {
-		super();
+		//super();
 		this.label = label;
 		//this.random = random;
 		this.indivs = indivs;
@@ -103,7 +103,9 @@ public class Population {
 			//Chromosome hap2 = indivs.elementAt(index2).getChromosome(tmp);
 			// recombination and form an offspring
 			//ChromPair cp = new ChromPair(hap1, hap2, random);
-			//cp = cp.recombine(); 
+			//cp = cp.recombine();
+			//the two chromosome of one individual crossover and recombine to form gametes
+			//and randomly choose one to pair with gamete from another individual
 			int tmp = random.nextInt() % 2;
 			Chromosome gamete1 = indivs.elementAt(index1).recombine(random).getChromosome(tmp);
 			tmp = random.nextInt() % 2;

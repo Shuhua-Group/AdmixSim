@@ -1,12 +1,12 @@
 /*
  * AdmSimulator
  * GeneralModel.java
- * Population admixture can be generalized to K ancestral populations and T waves.
- * and the admixture can be fully modeled as TxK matrix, in which each element mij
+ * Population admixture process can be generalized to K ancestral populations and T 
+ * waves. The admixture can be fully modeled as TxK matrix, in which each element mij
  * denote the gene flow strength from jth ancestral population at ith generation
  * In each generation, the population size is N, then the number of individuals from
- * jth ancestral population is N*mij, same as all others, and the rests are sampled
- * from previous generation.
+ * jth ancestral population is N*mij, same as all other ancestries, and the rests are 
+ * sampled from previous generation.
  */
 
 package model;
@@ -23,9 +23,13 @@ import adt.Population;
 import adt.Segment;
 
 public class GeneralModel {
+	//initial number of ancestral haplotypes
 	private Vector<Integer> initAnc;
+	//population sizes for each generation
 	private Vector<Integer> Nes;
+	//a matrix for admixture proportions
 	private Vector<Vector<Double>> props;
+	//the target admixed population
 	private Population pop;
 	//Random random;
 
@@ -48,10 +52,14 @@ public class GeneralModel {
 	}
 
 	public void readParams(String filename) {
+		/*
+		 * read population admixture model from file
+		 */
 		Nes = new Vector<Integer>();
 		props = new Vector<Vector<Double>>();
 		BufferedReader br = null;
 		boolean isStart = false;
+		
 		try {
 			br = new BufferedReader(new FileReader(filename));
 			String line;
@@ -68,8 +76,8 @@ public class GeneralModel {
 					isStart = true;
 					continue;
 				}
-				if (isStart && initAnc == null) {
-					System.err.println("Uninitialized ancestral population number");
+				if (isStart && null == initAnc) {
+					System.err.println("Uninitialized number of ancestral population haplotypes");
 					System.exit(0);
 				}
 				String[] tmp = line.split("\\s+");
@@ -112,7 +120,7 @@ public class GeneralModel {
 	public boolean isValidNe() {
 		for (int ne : Nes) {
 			if (ne <= 0) {
-				System.err.println("Effective Population Size must be positive");
+				System.err.println("Population size should be positive number");
 				return false;
 			}
 		}
@@ -120,21 +128,22 @@ public class GeneralModel {
 	}
 
 	public boolean isValidProp() {
+		
 		for (int i = 0; i < props.size(); i++) {
 			double sum = 0;
 			for (int j = 0; j < props.elementAt(i).size(); j++) {
 				if (props.elementAt(i).elementAt(j) < 0 || props.elementAt(i).elementAt(j) > 1) {
-					System.err.println("Admixture proportion must be between 0 and 1");
+					System.err.println("Admixture proportion should be between 0 and 1");
 					return false;
 				}
 				sum += props.elementAt(i).elementAt(j);
 			}
 			if (i == 0 && sum != 1.0) {
-				System.err.println("The proportion for initial generation must be 1");
+				System.err.println("The proportion for initial generation should sum to 1");
 				return false;
 			}
 			if (sum > 1) {
-				System.err.println("The sum of proportion larger than 1");
+				System.err.println("The sum of proportion is larger than 1 in generation " + (i+1));
 				return false;
 			}
 		}
@@ -142,6 +151,7 @@ public class GeneralModel {
 	}
 
 	public void evolve(double len, Random random) {
+		
 		if (!isValidNe() || !isValidProp()) {
 			System.exit(1);
 		}
@@ -170,11 +180,11 @@ public class GeneralModel {
 						// ancestral population. The first number was set large
 						// to distinguish ancestral population, and the rest was
 						// used to distinguish haplotype
-						int label = random.nextInt(initAnc.elementAt(j)) + 10000 * (j + 1);
+						int label = random.nextInt(initAnc.elementAt(j)) + 1000000 * (j + 1);
 						segs.add(new Segment(0.0, len, label));
 						Chromosome chr1 = new Chromosome(segs);
 						segs = new Vector<Segment>();
-						label = random.nextInt(initAnc.elementAt(j)) + 10000 * (j + 1);
+						label = random.nextInt(initAnc.elementAt(j)) + 1000000 * (j + 1);
 						segs.add(new Segment(0.0, len, label));
 						Chromosome chr2 = new Chromosome(segs);
 						indsCur.add(new ChromPair(chr1, chr2));
